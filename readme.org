@@ -1,0 +1,38 @@
+* Digital Design
+
+Digital design is the base for integrated circuits. For the design of
+digital systems a hardware description language is needed. The most
+common languages are VHDL and Verilog. An editor is needed to write
+the necessary code and support the developer as much as possible.
+
+* Emacs
+
+Emacs is a free editor which can be used for a variety of
+programming languages. Due to the integration of emacs-lisp in the
+editor it can be freely customized and enriched with features. The
+most popular version ``Gnu Emacs'' were developed by Richard Stallman
+in 1985. The editor emacs is platform-independent and can be used with
+a graphical user interface or in the console. Considering to the
+possibility of extending emacs it can be customized to the personal
+needs and preferences.
+
+The learning curve of emacs is very high, because of this reason many
+users won't give it a try. This bachelor thesis should especially
+support students at the university of applied sciences in hagenberg
+and show them how to use the editor.
+
+* VHDL
+
+This configured initialization file is intended for students. The
+creation of templates and operating system dependent external tools
+should be integrated in the workflow. These external tools provide
+syntax check and the creation of the compilation inside the
+editor. Internal features like version- and project control make sure
+the tasks can be fulfilled fast and easy. A own section for personal
+customization's should be present in the configuration file.
+
+The editor should be a simple user interface and provide every form of
+textual description. Tools should be integrated in the workflow with
+the focus on VHDL. The thesis itself is published under the
+GPLv3. Every user can enrich, develop and customize the code to
+personal needs and wishes.
