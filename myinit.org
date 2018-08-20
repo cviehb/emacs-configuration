@@ -1,0 +1,1442 @@
+#+Author: Christoph Viehboeck
+#+TITLE: emacs configuration cviehboe
+#+EMAIL: s1510306040@students.fh-hagenberg.at
+#+DATE:  2018-07-12
+#+OPTIONS: tex:t latex:t tex:verbatim
+#+OPTIONS: ':t -:t toc:nil
+
+This configuration is mainly inspired by the love to emacs and it's
+functionality. Most supported language is VHDL, as this configuration
+where build due to a bachelors degree. Programmed with an eye kept on a
+lightweight and fast setup. Licensed under GPLv3.
+
+\newpage
+#+Toc: headlines N
+\newpage
+
+* help
+
+this section provides some help to get familiar with emacs. 
+
+** starting point
+
+   at first i will explain the basics for using emacs. i mention that you
+   found out that on org files tab will open and close sections. but org
+   can do much more. in short org is a markup-language which will do most
+   of the work with plain text. that's the reason why it is also usable
+   to write an configuration file for emacs. we know emacs is a editor,
+   more like a operating system that can be customized to your personal
+   needs and settings. 
+
+** important keys
+   
+   emacs is used with keys, it has also support for using with a mouse
+   but original it's designed to use without cause it's much faster. you
+   really don't need it. Most of the commands begin with the key
+   "ctrl" or "meta (alt)". in examples these keys relies to "C" and
+   "M" stands for Ctrl and Meta.
+
+** help for help :)
+
+   here i will write down some useful functions which can be called for
+   getting help inside of emacs. as you have learnt before we use
+   commands to instruct emacs to call functions. press following
+   combination, "M-x" this will open the menu for function-calls. next
+   type in "help" and press <return> for entering the command. now you
+   are in the emacs help menu, this will guide you through the
+   editor. some more function calls can be found after this section.
+
+#+BEGIN_SRC fundamental
+(help)
+(help-with-tutorial)
+#+END_SRC
+
+** org
+
+org stands for organization mode and provides a lot of features. can
+be used for writing documents, presentations and emacs-init-files for
+example. also every other mode can be described. the main goal is to
+use plain text for every kind of task.
+
+*** examples
+
+**** header
+
+always this options can be used for the header to create a signed document.
+
+#+BEGIN_SRC fundamental
+#+Author: Christoph Viehboeck
+#+TITLE: emacs configuration cviehboe
+#+EMAIL: s1510306040@students.fh-hagenberg.at
+#+DATE:  2018-07-12
+#+END_SRC
+
+**** documents
+
+with a little help from latex all your standard word documents can be
+easier and faster written with org made. support for tables, pictures
+and links are provided. 
+
+#+BEGIN_SRC fundamental
+#+OPTIONS: tex:t latex:t tex:verbatim
+#+OPTIONS: ':t -:t toc:nil
+#+END_SRC
+
+**** beamer
+
+example startup code for doing a presentation with org mode and latex.
+
+#+BEGIN_SRC fundamental
+#+OPTIONS: H:2 toc:nil center:t
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation]
+#+BEAMER_THEME: PaloAlto
+#+BEAMER_FONT_THEME: default
+#+BEAMER_COLOR_THEME: whale
+#+COLUMNS: %45ITEM %10BEAMER_ENV(Env) %10BEAMER_ACT(Act) %4BEAMER_COL(Col) %8BEAMER_OPT(Opt)
+
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [bigger]
+
+#+beamer_frame_level: 3
+#+END_SRC
+
+** lisp
+
+when i talk about lisp always the emacs-lisp dialect is meant. emacs
+lisp is a bit different then other lisp dialects. to understand how
+emacs works, only the language lisp is needed. the base of emacs is c-
+and emacs-lisp source code. technically lisp is a interpreter and can
+be adapted every time.
+
+** links
+
+to use this links move the point over it and press the keys "C-c C-o" to
+follow the link. these links contains the gnu manuals for the editor
+itself and the emacs lisp language. but also the built in browse r eww
+can be used. try it :) !
+
+http://www.gnu.org/software/emacs/manual/html_node/emacs/index.html
+http://www.gnu.org/software/emacs/manual/html_node/eintr/index.html
+http://www.gnu.org/software/emacs/manual/html_node/elisp/index.html
+
+* basic
+
+basic settings and instructions to get familiar with the emacs setup
+and the first keystrokes.
+
+** license
+
+   Emacs configuration Setup
+   Copyright (C) 2018  Christoph Viehboeck
+   
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+** installation
+
+to install this configuration you have to make sure following points
+
+- emacs version 25 at least
+- stable internet connection
+- copy this file and the provided init.el to the emacs-dir
+  - linux ~/.emacs.d
+  - windows C:/users/<user>/app_data/roaming/.emacs.d
+
+** alias
+
+when emacs has to be loaded from a different directory to hold
+different configuration some example here. supported at emacs version
+greater 24.3
+
+#+BEGIN_SRC fundamental
+alias em 'emacs -q --user-emacs-directory "<path-to->/.emacs.d/"'
+#+END_SRC
+
+** wrapper usepackage
+
+wrapper for use-package to get a specific information, loadinfo and
+timer if package is correct installed.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun load-use-package (package)
+    "Info messages like in an ide when installing packages"
+    (message "Installing %s ..." package)
+    (use-package package)
+    )
+
+#+END_SRC
+
+** usepackage
+
+usepackage provides the functionality of automatic downloading all the
+needed configuration and packages. it's not needed to have the
+emacs-lisp files local on storage. since emacs-version 24.4 the
+usepackage is installed standard on the emacs setup, means there is no
+support for older versions.
+
+#+BEGIN_SRC emacs-lisp
+
+  (eval-when-compile (require 'use-package))
+  (setq use-package-always-ensure t)
+  (require 'bind-key)
+
+#+END_SRC
+
+** beautify
+
+some minor beautifications to shrink the names of the modes or remove
+them full of the modeline. can be used standarized and functionality
+is provided in combination with use-package.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package diminish)
+  (setq frame-title-format "Emacs %b [%m]")
+
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda ()
+              (setq mode-name "EL")))
+
+#+END_SRC
+
+** text return
+
+automatic carriage return in text mode buffers means you can freely
+type as long as you want and the mode will go to next line after word
+is finished by space.
+
+#+BEGIN_SRC emacs-lisp
+
+  (add-hook 'text-mode-hook 'auto-fill-mode)
+  (diminish 'auto-fill-function "")
+
+#+END_SRC
+
+** interface
+
+disable all useless gui elements, to get a clean screen. in my opinion
+emacs is more effective when using without a gui. minor difference on
+when using a older emacs version, couse there is no scroll-bar-mode
+available.
+
+#+BEGIN_SRC emacs-lisp
+
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (when (not (version< emacs-version "25.1"))
+    (scroll-bar-mode -1))
+  (setq visible-bell t)
+
+#+END_SRC
+
+** user settings
+
+specific user settings related to my user profile
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq user-mail-address "christophv071@gmail.com")
+  (setq gc-cons-threshold 100000000)
+  (setq inhibit-startup-message t)
+  (setq echo-keystrokes 0.4)
+
+  ;; short typing jes or no
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (show-paren-mode 1)
+  (setq show-paren-delay 0)
+
+#+END_SRC
+
+** mark
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package expand-region
+    :bind ("C-\-" . er/expand-region)
+    )
+
+#+END_SRC
+
+* global keys
+
+this section provides some global set keys that will be used very often.
+
+** revert buffer
+
+revert buffer loads the currently visiting buffer new which means it
+reads it from the local disk new. necessary if buffers often
+change. short keystroke cause i use it often.
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x r v") 'revert-buffer)
+#+END_SRC
+
+* command center
+
+** core
+
+core package of counsel which provides a lot of features similar to
+ido mode.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package counsel
+    :init
+    (progn
+      (defun counsel-ag-word-at-point ()
+        "search in current directory of word at point"
+        (interactive)
+        (if (region-active-p)
+            (let ((buf (buffer-substring-no-properties
+                        (region-beginning) (region-end))))
+              (deactivate-mark)
+              (counsel-ag buf))
+          (counsel-ag (current-word))))
+
+      (defun swiper-word-at-point ()
+        "search word at point in buffer"
+        (interactive)
+        (if (region-active-p)
+            (let ((buf (buffer-substring-no-properties
+                        (region-beginning) (region-end))))
+              (deactivate-mark)
+              (swiper buf))
+          (swiper (current-word))))
+      )
+    :bind (("C-s" . swiper)
+           ("M-x" . counsel-M-x)
+           ("C-x C-f" . counsel-find-file)
+           ("C-x b" . ivy-switch-buffer)
+           ("C-x C-b" . counsel-ibuffer)
+           ("C-c s" . counsel-ag)
+           ("C-c h i" . counsel-ag-word-at-point)
+           ("C-c h o" . swiper-word-at-point)
+           ("M-y" . counsel-yank-pop))
+    :config
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-re-builders-alist
+          '((t . ivy--regex-plus)))
+    )
+
+#+END_SRC
+
+** completion minibuffer
+
+ivy provides a all time support of the last buffers also when new
+opened. completion of everything in the minibuffer, meant when a list
+can be searched or a supportive message drops. 
+
+#+BEGIN_SRC emacs-lisp
+
+    (use-package ivy
+      :init
+      (setq ivy-use-virtual-buffers t)
+      (setq enable-recursive-minibuffers t)
+      :bind (("C-c C-r" . 'ivy-resume))
+      :config
+      (add-hook 'after-init-hook (lambda ()
+                                   (ivy-mode t))))
+
+#+END_SRC
+
+** music
+
+maybe you will not believe it but it is possible emacs can control
+spotify inside its interface. how nice is that :)
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package counsel-spotify
+    :config
+    (setq counsel-spotify-client-id "b8a8fa5c8f1442a1950fe32feba8045f")
+    (setq counsel-spotify-client-secret "06d3e9a61a1a435ba04fe0dbb193050d"))
+
+#+END_SRC
+
+** key info
+
+information of the next keys which can be pressed
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package which-key
+    :config
+    (add-hook 'after-init-hook (lambda () (which-key-mode t))))
+
+#+END_SRC
+
+** short keys
+
+likely to the former package which key act hydra as a shortcut menu
+for a specific mode, is a little bit like a local keymap for minor-
+and major-modes.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package hydra)
+
+#+END_SRC
+* fuzzy match
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package flx)
+
+#+END_SRC
+
+* navigation
+
+** fast jump
+
+fast jumping on the displayed buffers
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package avy
+    :bind (("C-x j" . avy-goto-word-1))
+    )
+
+#+END_SRC
+
+** code move
+   
+fast source-code navigation using tags with a little help of the gnu
+environment. make sure you have installed gnu global and
+exuberant-ctags. when the project isn't set up in emacs you have to
+use the commandline version.
+
+#+BEGIN_SRC sh
+  ctags -e -R
+#+END_SRC
+
+*** etags
+
+fast grep and search in project for getting informations. also jumps
+are provided, but xrefs packages handles this functionality more
+simple and faster.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package counsel-etags
+    :ensure t
+    :bind (("C-x t" . counsel-etags-scan-code)))
+
+#+END_SRC
+
+*** xref jump
+
+jump fast to definitions of functions components or constants, also
+jumping into and out is provided with the marker stack.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package ivy-xref
+    :config
+    (setq xref-show-xrefs-function 'ivy-xref-show-xrefs))
+
+#+END_SRC
+
+*** gtags
+
+fast search of documents using the same tags-source than the other
+packages, regex included with ivy search patterns.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package counsel-gtags)
+
+#+END_SRC
+
+*** tags create function
+
+due to the full support we need to create tags for the project and
+define them.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun counsel-create-tags (path &optional lbl)
+    "Create tags to the given PATH."
+    (interactive "D")
+    (counsel-etags-scan-code path)
+    (when (eq lbl nil)
+      (setq lbl "gtags-default"))
+    (counsel-gtags-create-tags path lbl)
+    )
+
+#+END_SRC
+
+** window move
+
+normal to switch a buffer you have to navigate with "C-x o" that can
+be very lame using all the time. instead we can use built in window
+movements using "shift-<arrow>". helper function to avoid error if no
+2nd window is present.
+
+#+BEGIN_SRC emacs-lisp
+
+  (when (fboundp 'windmove-default-keybindings)
+    (windmove-default-keybindings))
+
+#+END_SRC
+
+** frame move
+
+the same emacs program is usable in more than one frame. to make a new
+frame us the command "C-x 5 2". add a keybinding for other frame cause
+the former used "C-x 5 o" is very unhandy to type.
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x O") 'other-frame)
+#+END_SRC
+
+** showing buffers
+
+we rebind the standard interface to a more informative buffer showing
+where buffers can be switched and changed
+
+#+BEGIN_SRC emacs-lisp
+
+  (defalias 'list-buffers 'ibuffer-other-window)
+
+#+END_SRC
+* completion
+
+company provides a text completion framework
+
+** core
+
+main package with all the necessary stuff
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package company
+    :diminish (company-mode "co")
+    :config
+    (setq company-idle-delay 0.4)
+    (add-hook 'after-init-hook 'global-company-mode))
+
+#+END_SRC
+* undo
+  
+very nice package which supports a undo-tree like a simple version control on one file
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package undo-tree
+    :config
+    (global-undo-tree-mode t)
+    (setq undo-tree-mode-lighter " ut"))
+
+#+END_SRC
+
+* org
+
+organization mode supports many tasks and can be used for every work
+that has to be done. 
+
+** core
+
+the core is built in since emacs24 and provides better support when
+directly get the newest mode from source
+
+#+BEGIN_SRC emacs-lisp
+
+  (when (require 'org nil 'noerror)
+    (setq org-src-fontify-natively t))
+    
+#+END_SRC
+
+** bullets
+
+beautifys the org plain text mode and shows nice bullets in the doc mode
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package org-bullets
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+#+END_SRC
+* server
+
+emacs can handle a server instance where clients can
+connect. advantage of this feature is a really fast startup and all
+buffers are currently opened in the server instance. buffers where
+hold on server. till close with key binding Ctrl Meta c together.
+
+- set up an alias or similar with correct startup commands
+- alias em '<install-location>/emacsclient -q -na <install-location>/emacs -e "(make-frame-visible)"'
+
+#+BEGIN_SRC emacs-lisp
+
+  (add-to-list 'command-switch-alist '("(make-frame-visible)" .
+                                       (lambda (s))))
+
+  ;; startup server when not running
+  (when (require 'server nil 'noerror)
+    (progn
+      (when (not (server-running-p))
+        (server-start))
+
+      ;; https://www.emacswiki.org/emacs/WThirtyTwoServerMode
+      (defun client-close-frame ()
+        "Exit server buffers and hide the main Emacs window"
+        (interactive)
+        (server-edit)
+        (make-frame-invisible nil t))
+
+      (global-set-key (kbd "C-x C-c") 'client-close-frame)
+      (global-set-key (kbd "C-M-c") 'save-buffers-kill-emacs)
+      ))
+
+#+END_SRC
+
+* editing
+** multi cursor
+
+provides multi cursor support for emacs and can be used as some kind
+of fast hack instead of defining a kmacro.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package multiple-cursors
+    :bind (("C-)" . 'mc/mark-next-like-this)
+           ("C-(" . 'mc/mark-pervious-like-this)
+           ("C-:" . 'mc/mark-all-like-this))
+    )
+
+#+END_SRC
+
+** rectangle mode
+
+define a function which interactvely marks down till no char is
+present
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun rectangle-mark-down ()
+    "marks down and edit multi lines at once"
+    (interactive)
+    (save-excursion
+      (let* ((begin (point))
+             (end (point-max))
+             (col (current-column)))
+        (while (and (equal col (current-column))
+                    (not (equal (point) (point-max))))
+          (setq end (point))
+          (ignore-errors (next-line)))
+        (goto-char end)
+        (push-mark begin nil t)
+        (call-interactively 'string-rectangle))))
+
+  (defun rectangle-mark-down-edit ()
+    "marks down and edit multi lines at once"
+    (interactive)
+    (save-excursion
+      (let* ((begin (point))
+             (end (point-max))
+             (col (current-column)))
+        (while (and (equal col (current-column))
+                    (not (equal (point) (point-max))))
+          (setq end (point))
+          (ignore-errors (next-line)))
+        (goto-char end)
+        (push-mark begin nil t)
+        (call-interactively 'rectangle-mark-mode))))
+
+
+  (global-set-key (kbd "C-c )") 'rectangle-mark-down)
+
+#+END_SRC
+
+** regexpressions
+
+visualize the actual regex with life feedback how nice is
+this. regular expressions are very mighty in case of wiring in vhdl.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package visual-regexp)
+
+#+END_SRC
+
+** comments
+
+improved comments du to shortcut C-c c which comments out a line or
+when marked the whole region. 
+#+BEGIN_SRC emacs-lisp
+
+  (defun improved-comment ()
+    "comments region or only one line"
+    (interactive)
+    (if (region-active-p)
+        (comment-or-uncomment-region (region-beginning) (region-end))
+      (comment-line 1)))
+
+  (global-set-key (kbd "C-c c") 'improved-comment)
+
+#+END_SRC
+* check
+
+these packages provide a on the fly buffer check in similar ways only
+for spell or even for the syntax of a buffer in different languages.
+
+** spell check
+
+spell check need following external dependencies as its not compatible
+on a windows system cause aspell is not by default installed. Comments
+in Programming Languages are also checked. we use german as default
+dictionary.
+
+- aspell-en
+- aspell-de
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package flyspell
+    :config
+    (add-hook 'after-init-hook 'flyspell-prog-mode)
+    (add-hook 'text-mode-hook 'flyspell-mode)
+    (diminish 'flyspell-mode "fs")
+    
+    (defun switch-dict (language)
+      "switch dict to given lang"
+      (when (not (string= ispell-current-dictionary language))
+        (ispell-change-dictionary language)
+        (message "dict: %s" language)))
+
+    (defun dict-ger ()
+      "switch to ger dict, spell check"
+      (interactive)
+      (switch-dict "deutsch8"))
+
+    (defun dict-en ()
+      "switch to en dict, spell check"
+      (interactive)
+      (switch-dict "english"))
+
+    (setq flyspell-default-dictionary "deutsch8")
+    )
+
+#+END_SRC
+
+** syntax check
+
+core is the flycheck package which only needs an compiler in the
+background to parse the errors. a special syntax has to be used to
+parse the error string. emacs itself provides an older package called
+flymake which is older and doesn't use asynchronous processing.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package flycheck
+    :diminish (flycheck-mode "fc")
+    :config
+    (add-hook 'after-init-hook 'global-flycheck-mode))
+
+#+END_SRC
+* version control
+
+emacs provides a standard interface and supports most of the version
+control systems via a simple interface, vc. but for clearcase there is
+no support present. git is a lot better managed via the package
+magit.
+
+** clearcase
+
+intel uses clearcase as version control system. for emacs 25 there is
+an old package which supports also emacs version 25. please make sure
+you use the functional version. if you provide a more common setup
+clearcase is alse available through the standard package vc.
+
+- downloading a specific file of a repository in github uses following
+  syntax
+  - https://github.com/user/repository/raw/branch/filename
+
+#+BEGIN_SRC emacs-lisp
+
+  (defvar clearcase-url "https://github.com/emacsattic/clearcase/raw/master/clearcase.el")
+  (defvar clearcase-install-path (concat user-emacs-directory "local"))
+  (defvar clearcase-file "clearcase.el")
+  (defvar clearcase-file-path (concat clearcase-install-path "/" clearcase-file))
+
+  (defun get-move-clearcase ()
+    (when (not (file-exists-p clearcase-file-path))
+      (make-directory clearcase-install-path)
+      (add-to-list 'load-path clearcase-install-path)
+      (url-copy-file clearcase-url clearcase-file)
+      (copy-file clearcase-file clearcase-install-path)
+      (delete-file clearcase-file)))
+
+  (defun clearcase-config ()
+    "setup for clearcase"
+    (get-move-clearcase)
+    (when (require 'clearcase nil t)
+      (progn
+        (global-set-key (kbd "C-x c o") 'clearcase-checkout-current-buffer)
+        (global-set-key (kbd "C-x c u") 'clearcase-uncheckout-current-buffer)
+        (global-set-key (kbd "C-x c i") 'clearcase-checkin-current-buffer)
+        (add-to-list 'load-path clearcase-install-path)
+        )))
+
+  (run-with-idle-timer 0.5 nil 'clearcase-config)
+
+#+END_SRC
+
+** git
+
+git integration inside of emacs. very powerful package which can do
+all the stuff inside your most used tool, the editor. used in my
+configuration with an raspberry-pi git ssh server.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package magit
+    :bind ("C-x g" . magit-status))
+
+#+END_SRC
+* try 
+
+only try some packages if they marry well together, if not nothing is
+fix set only restart emacs or disable the package. when restarting
+emacs the no packages are saved in the elpa folder. the code is only
+evaluated on the previous live session.
+
+ #+BEGIN_SRC emacs-lisp
+
+  (use-package try)
+
+#+END_SRC
+* async
+
+possibility to asynchronous processing inside of emacs for different
+functions which needs lots of ressources.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package async)
+
+#+END_SRC
+
+* templates
+
+yasnippet is a standard template system which can be used for nearly
+every language
+
+** core
+
+the core package is called yasnippet which provides a simple
+completion for all snippets which are defined for a specific
+language. expand the snippet by the abbreviation followed by <tab>.
+
+- vhdl has a own template system
+- define new snippets on the fly
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package yasnippet
+    :config
+    (add-hook 'after-init-hook (lambda () (yas-global-mode t))))
+
+#+END_SRC
+
+** snippets
+
+there is also a set of predefined templates for most of the languages
+which can be downloaded as package for emacs.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package yasnippet-snippets)
+
+#+END_SRC   
+
+* vhdl
+
+vhdl is a hardware description language. the powerful vhdl-mode is
+introduced by reto zimmermann and contains in raw 10000 lines of
+code. in my opinion there is no other mode which supports the language
+as much as these mode does it.
+
+- compilation
+- syntax highlighting
+- indentiation engine
+
+** naming
+
+changed some basic namings with regexpressions and add some basic
+stuff.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun custom-vhdl-naming-hook ()
+    "contains a setup with settings used at intel"
+    (setq vhdl-actual-port-name (quote ("\\(.*\\)_[io]$" . "\\1_s")))
+    (setq vhdl-architecture-file-name (quote ("\\(.*\\) \\(.*\\)" . "\\1-\\2-a")))
+    (setq vhdl-components-package-name
+          (quote
+           (("\\([A-Za-z0-9]*\\).*$" . "\\1-comp")
+            . "components")))
+    (setq vhdl-compose-architecture-name (quote (".*" . "")))
+    (setq vhdl-compose-configuration-create-file t)
+    (setq vhdl-compose-configuration-name (quote ("\\(.*\\) \\(.*\\)" . "\\1_\\2_c0")))
+    (setq vhdl-compose-create-files (quote separate))
+    (setq vhdl-conditions-in-parenthesis t)
+    (setq vhdl-configuration-file-name (quote (".*" . "\\&-c")))
+    (setq vhdl-entity-file-name (quote (".*" . "\\&-e")))
+    (setq vhdl-package-file-name (quote (".*" . "\\&-p")))
+    (setq vhdl-testbench-architecture-name (quote (".*" . "beh")))
+    (setq vhdl-testbench-configuration-name (quote ("\\(.*\\) \\(.*\\)" . "\\1_\\2-cfg")))
+    (setq vhdl-testbench-create-files (quote separate))
+    (setq vhdl-testbench-entity-name (quote (".*" . "\\&-tb"))))
+
+#+END_SRC
+
+** custom options
+
+due to the naming some related options are necessary
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun custom-vhdl-options-hook ()
+    "sets specific personal options needed for circuit design"
+    (setq vhdl-clock-edge-condition (quote standard))
+    (setq vhdl-end-comment-column 150)
+    (setq vhdl-testbench-include-configuration nil)
+    (setq vhdl-testbench-initialize-signals nil)
+    (setq vhdl-self-insert-comments t)
+    (setq vhdl-hideshow-menu nil)
+    (setq vhdl-highlight-special-words t)
+    (setq vhdl-highlight-translate-off t)
+    (setq vhdl-one-string "'1'")
+    (setq vhdl-underscore-is-part-of-word nil)
+    (setq vhdl-use-components-package t)
+    (setq vhdl-use-direct-instantiation (quote never)))
+    
+#+END_SRC
+
+** preferences
+
+my personal preverences and customizations on the vhdl mode.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun custom-vhdl-prefrences-hook ()
+    "provides my customizations on the vhdl mode"
+    (setq vhdl-clock-name "clk_i")
+    (setq vhdl-reset-name "res_n_i"))
+
+#+END_SRC
+
+** snippets
+
+use the built in snippets functionality and add snippets which are
+local located in the snippet folder. add your own snippets due to
+adding code directly to the source folder in the emacs home directory
+or by using the provided functions.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defconst vhdl-model-dir-name "vhdl-model-snippets/")
+  (defconst vhdl-model-directory (concat user-emacs-directory vhdl-model-dir-name))
+
+  (defun vhdl-add-snippet-models ()
+    "adds the model from snippet folder to vhdl model list"
+    (when (file-directory-p vhdl-model-directory)
+      (vhdl-model-clear)
+      (let (modelfiles '())
+        (setq modelfiles (directory-files vhdl-model-directory))
+        (dolist (elem modelfiles)
+          (when (not (string-match-p "^[.|#|~]" elem))
+            (add-to-list 'vhdl-model-alist
+                         `(,elem ,(concat vhdl-model-directory elem) "" "")))))))
+
+  (defun vhdl-model-clear ()
+    "Clear's model list when something go wrong."
+    (setq vhdl-model-alist '()))
+
+  (defun vhdl-add-model-check-perm-p (NAME)
+    "Check's if content can be written to file NAME."
+    (when (not (file-directory-p vhdl-model-directory))
+      (make-directory vhdl-model-directory))
+    (when (file-exists-p (concat vhdl-model-directory NAME))
+      (return nil))
+    (return t))
+
+  (defun vhdl-add-snippet (NAME &optional code)
+     "Add a snippet/model to the collection, NAME of the snippet, when CODE is zero a marked region has to bed defined."
+     (interactive "Snippet-name:")
+     (let ((buf))
+       (if (region-active-p)
+           (progn (buf (buffer-substring-no-properties
+                        (region-beginning) (region-end)))
+                  (deactivate-mark))
+         (buf code))
+       (when (vhdl-add-model-check-perm-p NAME))))
+
+#+END_SRC
+
+** makefile
+
+vhdl-mode has a support for generation of makefiles using the project
+configuration
+
+*** compiler
+
+for using all the options the compiler has to set up right for getting
+all errors displayed. means a compiler has to be selected. through
+regular expressions the compile output get filtered and a error will
+be provided for checking.
+
+**** quartus
+
+main synthesis tools for altera fpga's developed by the intel company.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun custom-quartus-compiler-hook ()
+    "adds the needed regex and sets modelsim compiler"
+    )
+
+#+END_SRC
+
+**** modelism
+
+modelsim is a simulator distributed by mentor graphics. for
+professional support questasim is needed.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun custom-modelsim-compiler-hook ()
+    "adds the needed regex and sets modelsim compiler"
+    )
+
+#+END_SRC
+
+**** synopsis
+
+synthesis tool for asics and SoC-Systems. 
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun custom-synopsis-compiler-hook ()
+    "adds the needed regex and sets synopsis compiler"
+    )
+
+#+END_SRC
+
+*** hook compile
+
+last evaluated in the list is the default compiler in this row but can
+be changed every time in through customizations or when changing the
+list below.
+
+#+BEGIN_SRC emacs-lisp
+
+  ;; (add-hook 'vhdl-mode-hook custom-synopsis-compiler-hook)
+  ;; (add-hook 'vhdl-mode-hook custom-quartus-compiler-hook)
+  ;; (add-hook 'vhdl-mode-hook custom-modelsim-compiler-hook)
+
+#+END_SRC
+
+** projects
+
+*** generate
+
+implement a function which configure a project and save it to the
+project root directory. for testing purposes the project will not be
+saved to with the custom interface.
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq default-name "default project")
+  (setq default-desc "default description")
+  (setq default-root-path "~/")
+  (setq default-src-path '("-r ./"))
+  (setq default-exclude-files "")
+  (setq default-compiler-make-settings nil)
+  (setq default-compile-path "./")
+  (setq default-lib-name "work")
+  (setq default-lib-path "library_\\1/")
+  (setq default-makefile-name "Makefile_\\1")
+  (setq default-desc-detail "")
+
+  (defun vhdl-new-project (rootdir name description)
+    "Creates a new project from scratch and save it to the ROOTDIR with given NAME."
+    (interactive "DProject-root:\nsName:\nsDescription:")
+    (let ((default-project `(,name
+                             ,description
+                             ,rootdir
+                             ,mytestproj-src-path
+                             ,mytestproj-exclude-files
+                             ,mytestproj-compiler-make-settings
+                             ,mytestproj-compile-path
+                             ,mytestproj-lib-name
+                             ,mytestproj-makefile-name
+                             ,mytestproj-lib-path
+                             ,mytestproj-desc-detail)))
+      (add-to-list 'vhdl-project-alist default-project)
+      (vhdl-set-project name)
+      (vhdl-export-project (concat rootdir name ".vprj"))
+      (vhdl-set-project "")
+      (setq vhdl-project-alist (cdr vhdl-project-alist))
+      (message "Project %s defined!" name)))
+
+#+END_SRC
+
+*** test
+
+vhdl has a built in project mode but not very well documented in this
+case some functions provides an easy use of all needed functions
+
+Name             : name used in option ‘vhdl-project’ to choose project
+Title            : title of project (single-line string)
+Default directory: default project directory (absolute path)
+Sources          : a) source files  : path + "/" + file name
+                   b) directory     : path + "/"
+                   c) directory tree: "-r " + path + "/"
+Exclude regexp   : matches file/directory names to be excluded as sources
+Compile options  : project-specific options for each compiler
+  Compiler name  : name of compiler for which these options are valid
+  Compile options: project-specific compiler options
+                   ("\1" inserts library name, "\2" default options)
+  Make options:    project-specific make options
+                   ("\1" inserts Makefile name, "\2" default options)
+  Exceptions     : file-specific exceptions
+    File name regexp: matches file names for which exceptions are valid
+    - Options       : file-specific compiler options string
+                      ("\1" inserts library name, "\2" default options,
+                      "\3" project-specific options)
+    - Do not compile: do not compile this file (in Makefile)
+Compile directory: where compilation is run and the Makefile is placed
+                   ("\1" inserts compiler ID string)
+Library name     : name of library (default is "work")
+Library directory: path to library ("\1" inserts compiler ID string)
+Makefile name    : name of Makefile
+                   ("\1" inserts compiler ID string, "\2" library name)
+Description      : description of project (multi-line string)
+
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq mytestproj2
+        '("testproject2"
+          "direct test of the roots"
+          "~/FH_Hagenberg/Semester5/SCD5/Uebung/SCD5UE01_2017W/trunk/prjDsp/"
+          ("-r ./")
+          "/*/*/*/Example*.vhd"
+          (("ModelSim" "-87 \\2" "-f \\1 DspFir" nil)
+           ("Synopsys" "-vhdl87 \\2" "-f \\1 top_level"
+            ((".*/datapath/.*" . "-optimize \\3")
+             (".*_tb\\.vhd"))))
+          "lib/"
+          "work"
+          "lib/testprj2/"
+          "Makefile_\\2"
+          ""))
+
+  ;; try to separate all the informations
+
+  (setq mytestproj-name "testproject")
+  (setq mytestproj-desc "try to use the project mode on scd5")
+  (setq mytestproj-root-path "~/FH_Hagenberg/Semester5/SCD5/Uebung/SCD5UE01_2017W/trunk/prjDsp/")
+  ;; more than one path is possible hopefully recursion
+  (setq mytestproj-src-path '("-r ./"))
+  (setq mytestproj-exclude-files "/*/Example*")
+  (setq mytestproj-compiler-make-settings '("ModelSim" "-87 \\2" "-f \\1 DspFir" nil))
+  (setq mytestproj-compile-path "lib/")
+  (setq mytestproj-lib-name "work") ;; default is work
+  (setq mytestproj-lib-path "lib/")
+  (setq mytestproj-makefile-name "Makefile_\\2")
+  (setq mytestproj-desc-detail "this is the testproj which should test the gen of makefiles")
+
+  (setq mytestproj1 `(,mytestproj-name
+                      ,mytestproj-desc
+                      ,mytestproj-root-path
+                      ,mytestproj-src-path
+                      ,mytestproj-exclude-files
+                      ,mytestproj-compiler-make-settings
+                      ,mytestproj-compile-path
+                      ,mytestproj-lib-name
+                      ,mytestproj-makefile-name
+                      ,mytestproj-lib-path
+                      ,mytestproj-desc-detail))
+
+  (when (require 'vhdl-mode nil t)
+    (add-to-list 'vhdl-project-alist mytestproj1)
+    (add-to-list 'vhdl-project-alist mytestproj2))
+
+#+END_SRC
+
+*** compile
+
+implement a function which only compiles actual buffer file
+
+#+BEGIN_SRC emacs-lisp
+  ;; vhdl-imenu-generic-expression for fetching regex that matches most of the keywords.
+
+  (setq vhdl-regex-entity "^\\s-*\\(entity\\)\\s-+\\(\\(\\w\\|\\s_\\)+\\)")
+  (setq vhdl-regex-architecture "^\\s-*\\(architecture\\)\\s-+\\(\\(\\w\\|\\s_\\)+\\s-+of\\s-+\\(\\w\\|\\s_\\)+\\)")
+
+  (defun vhdl-return-regex (buffer regex)
+    "returns the regex name of the BUFFER or nil."
+    (interactive "b\ns")
+    (with-current-buffer
+        (save-excursion
+          (goto-char (point-min))
+          (search-forward-regexp regex nil t nil)
+          (current-word))))
+
+  (defun vhdl-proj-compile-buffer (buffer)
+    "compiles the actual BUFFER where the entity can be found."
+    (interactive "b")
+    (with-current-buffer buffer
+      (save-excursion
+        (let ((ent nil))
+          (setq ent (vhdl-return-regex buffer vhdl-regex-entity))
+          (when (not ent)
+            (setq ent (vhdl-return-regex buffer vhdl-regex-architecture)))
+          (when ent
+            (vhdl-make ent))))))
+
+  (defun vhdl-proj-compile-act-buffer ()
+    "compiles the buffer which you are visited actualy"
+    (interactive)
+    (vhdl-proj-compile-buffer (buffer-name)))
+
+#+END_SRC
+
+*** flycheck
+
+there are several ways to compile the actual design using the
+commandline. the library has to be set up.
+
+
+
+** hooks
+
+here i code all needed hooks for the vhdl mode when needed i load all
+with my hooks and preferences
+
+#+BEGIN_SRC emacs-lisp
+
+  (add-hook 'vhdl-mode-hook 'custom-vhdl-naming-hook)
+  (add-hook 'vhdl-mode-hook 'custom-vhdl-options-hook)
+  (add-hook 'vhdl-mode-hook 'custom-vhdl-prefrences-hook)
+  (add-hook 'vhdl-mode-hook 'vhdl-add-snippet-models)
+
+#+END_SRC
+
+** completion
+
+using company for the completion, for faster writing vhdl and get
+completion candidates, have to increase the max eval depth due to
+recursion of capf. 
+
+#+BEGIN_SRC emacs-lisp
+
+  (when (require 'company nil nil)
+    (use-package vhdl-capf
+      :config
+      (vhdl-capf-enable)
+      (setq max-lisp-eval-depth 1000)
+      (setq vhdl-capf-search-vhdl-buffers-for-candidates 2)))
+
+#+END_SRC
+
+** vhd tools
+
+own which provides in combination with tags and an hirarchy browser,
+but can only used with emacs versions greater 26.
+
+#+BEGIN_SRC emacs-lisp
+
+  (when (not (version<= emacs-version "26.2"))
+    (use-package vhdl-tools))
+
+#+END_SRC
+
+* tex
+
+great editor for building tex documents using the integrated tex
+environment auctex
+
+** core
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package tex-site
+    :ensure auctex
+    :defer t
+    :config
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+    )
+
+#+END_SRC
+
+** completion
+
+completion in for latex variables and environment
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package company-auctex
+    :config
+    (company-auctex-init))
+
+#+END_SRC
+
+* graph
+
+graphviz is a simple package which can easy draw some lines on the
+description in dot language. also emacs can be used for this job
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package graphviz-dot-mode)
+
+#+END_SRC
+
+* c/c++
+
+minor support for the c and c++ language but on windows no this
+effective than on linux. 
+
+** core
+
+make sure you get the server install use the command
+"irony-install-server" to get information about that.
+
+- cmake
+- libclang-dev
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package irony
+    :config
+    (add-to-list 'company-backends 'company-irony)
+    (add-hook 'c++-mode-hook (lambda ()
+                               (irony-mode)))
+    (when (require 'company nil t)
+      (add-hook 'irony-mode-hook
+                (lambda ()
+                  (define-key irony-mode-map [remap completion-at-point]
+                    'irony-completion-at-point-async)
+                  
+                  (define-key irony-mode-map [remap complete-symbol]
+                    'irony-completion-at-point-async)
+                  
+                  (irony-cdb-autosetup-compile-options))))
+    )
+
+#+END_SRC
+
+** flycheck integration
+
+directly integrate the flycheck setup and use the irony backend to
+provide several completions, make sure server and flycheck is already
+installed.
+
+#+BEGIN_SRC emacs-lisp
+
+  (when (require 'flycheck nil nil)
+    (use-package flycheck-irony
+      :config
+      (add-hook 'flycheck-mode-hook 'flycheck-irony-setup)))
+
+#+END_SRC
+
+** doc
+
+eldoc mode with irony provided features
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package irony-eldoc
+    :config
+    (add-hook 'c++-mode-hook (lambda ()
+                               (irony-eldoc)))
+    )
+
+#+END_SRC
+
+* excel
+
+for fast editing of .csv files the csv-mode is very easy to use in
+combination with builtin occur.
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package csv-mode)
+
+#+END_SRC
+
+* arduino
+
+use arduino .ino files for editing and uploading direct from emacs
+
+** core
+
+core package for up- and downloading
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package arduino-mode)
+
+#+END_SRC
+
+** complete
+
+provides support for arduino completion
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package company-arduino)
+
+#+END_SRC
+** platform
+
+platform support for project build and compile
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package platformio-mode
+    :config
+    (add-hook 'c++-mode-hook (lambda ()
+                               (platformio-conditionally-enable)))
+    )
+
+#+END_SRC
+* functions
+
+these section provides some general useful functions which are coded by myself.
+
+** file marked string
+
+opens the string which is marked in the current buffer, define short
+key for file at point.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun find-file-region (begin end)
+    "opens the marked region as file when available"
+    (interactive "r")
+    (find-file-at-point
+     (buffer-substring-no-properties begin end)))
+
+  (global-set-key (kbd "C-c C-f") 'find-file-at-point)
+
+#+END_SRC
