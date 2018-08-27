@@ -1,0 +1,12 @@
+-- purpose: <description>
+-- type   : sequential
+-- inputs : <clock>, <reset>, next_r_s
+-- outputs: r_s
+seq_<description>: process (<clock>, <reset>)
+begin  -- process seq_<description>
+  if reset_n_i = '0' then               -- asynchronous reset (active low)
+    r_s <= reset_c;
+  elsif clock_i'event and clock_i = '1' then  -- rising clock edge
+    r_s <= next_r_s;
+  end if;
+end process seq_<description>;

@@ -270,6 +270,16 @@ specific user settings related to my user profile
 
 #+END_SRC
 
+** library
+
+needed library for using some extended and new functions. fixed the
+bug which leads to an error using company-capf functions. the package
+used the new function word which is loaded by the library cl.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'cl)
+#+END_SRC
+
 * global keys
 
 this section provides some global set keys that will be used very often.
@@ -419,7 +429,7 @@ exuberant-ctags. when the project isn't set up in emacs you have to
 use the commandline version.
 
 #+BEGIN_SRC sh
-  ctags -e -R
+  ctags -e -R .
 #+END_SRC
 
 *** etags
@@ -430,9 +440,7 @@ simple and faster.
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package counsel-etags
-    :ensure t
-    :bind (("C-x t" . counsel-etags-scan-code)))
+  (use-package counsel-etags)
 
 #+END_SRC
 
@@ -473,8 +481,9 @@ define them.
     (counsel-etags-scan-code path)
     (when (eq lbl nil)
       (setq lbl "gtags-default"))
-    (counsel-gtags-create-tags path lbl)
-    )
+    (counsel-gtags-create-tags path lbl))
+
+  (global-set-key (kbd "C-x t") 'counsel-create-tags)
 
 #+END_SRC
 
@@ -774,7 +783,7 @@ clearcase is alse available through the standard package vc.
   (defvar clearcase-file-path (concat clearcase-install-path "/" clearcase-file))
 
   (defun get-move-clearcase ()
-    (when (not (file-exists-p clearcase-file-path))
+    (when (not (file-directory-p clearcase-file-path))
       (make-directory clearcase-install-path)
       (add-to-list 'load-path clearcase-install-path)
       (url-copy-file clearcase-url clearcase-file)
@@ -874,6 +883,34 @@ as much as these mode does it.
 - compilation
 - syntax highlighting
 - indentiation engine
+  
+** update
+
+due to the integration of the newest vhdl mode is not always
+completed. this functions updates the version to the newest available
+one.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defconst vhdl-mode-url "https://guest.iis.ee.ethz.ch/~zimmi/emacs/vhdl-mode-3.38.1.tar.gz")
+  (defconst vhdl-mode-git-url "https://github.com/cviehb/vhdl-mode/raw/master/vhdl-mode.el")
+  (defconst vhdl-mode-newest-version "3.38.1")
+  (defconst vhdl-local-folder "~/.emacs.d/local")
+
+  (defun vhdl-mode-update (url version-avail)
+    "updates the version to the newest one"
+    (interactive "sDownload Url Archive?:\nsVersion to Download:")
+    (require 'vhdl-mode)
+    (when (not (string= vhdl-version vhdl-mode-newest-version))
+      (message "Updating VHDL Mode")
+      (when (not (file-directory-p vhdl-local-folder))
+        (make-directory vhdl-local-folder))
+      (url-copy-file vhdl-mode-git-url (concat vhdl-local-folder "/vhdl-mode.el"))
+      (add-to-list 'load-path vhdl-local-folder)
+      (message "Update Done")
+      ))
+
+#+END_SRC
 
 ** naming
 
@@ -977,15 +1014,15 @@ or by using the provided functions.
     (return t))
 
   (defun vhdl-add-snippet (NAME &optional code)
-     "Add a snippet/model to the collection, NAME of the snippet, when CODE is zero a marked region has to bed defined."
-     (interactive "Snippet-name:")
-     (let ((buf))
-       (if (region-active-p)
-           (progn (buf (buffer-substring-no-properties
-                        (region-beginning) (region-end)))
-                  (deactivate-mark))
-         (buf code))
-       (when (vhdl-add-model-check-perm-p NAME))))
+    "Add a snippet/model to the collection, NAME of the snippet, when CODE is zero a marked region has to bed defined."
+    (interactive "Snippet-name:")
+    (let ((buf))
+      (if (region-active-p)
+          (progn (buf (buffer-substring-no-properties
+                       (region-beginning) (region-end)))
+                 (deactivate-mark))
+        (buf code))
+      (when (vhdl-add-model-check-perm-p NAME))))
 
 #+END_SRC
 
@@ -1225,6 +1262,146 @@ there are several ways to compile the actual design using the
 commandline. the library has to be set up.
 
 
+** nice functions
+
+this section provides some nice functions, improving the workflow
+designing vhdl.
+
+*** minor functions
+
+the code provides some minor functions, which will be used by the
+following main supported code.
+
+**** marks for line
+
+return the points for beginning and end of line.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun beginning-of-line-mark ()
+    "return beginning of line marker"
+    (save-excursion
+      (beginning-of-line)
+      (point)))
+
+  (defun end-of-line-mark ()
+    "return beginning of line marker"
+    (save-excursion
+      (end-of-line)
+      (point)))
+
+#+END_SRC
+
+**** next word
+
+go to the next word in the buffer.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun next-word ()
+    (save-excursion)
+    (forward-symbol 2)
+    (current-word))
+
+#+END_SRC
+
+**** replace regex
+
+replaces the regex with given string in current region
+
+#+BEGIN_SRC emacs-lisp
+
+(defun replace-string-region-regex (REGEX TO-STRING BEGIN END)
+    "Replace regex defined string"
+    (save-excursion
+      (goto-char BEGIN)
+      (while (search-forward-regexp REGEX END t)
+        (replace-match TO-STRING nil t))))
+
+#+END_SRC
+
+*** port change io
+
+poor mans change of the port names of an entity. the portnames shoudl
+be used with the extension of "_i" or "_o" in the names.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun vhdl-port-change-in-out (begin end)
+    "poor mans change port in and out"
+    (interactive "r")
+    (if (region-active-p)
+        (progn
+          (replace-string-region-regex "\\_<in\\_>" "xyz" begin end)
+          (replace-string-region-regex "\\_<out\\_>" "in" begin end)
+          (replace-string-region-regex "\\_<xyz\\_>" "out" begin end)
+          (replace-string-region-regex "_i\\_>" "_Ä" begin end)
+          (replace-string-region-regex "_o\\_>" "_i" begin end)
+          (replace-string-region-regex "_Ä\\_>" "_o" begin end))
+      (message "mark port delacrations!")))
+
+#+END_SRC
+
+*** instance io
+
+use signalnames for decalare them as normal std_ulogic. if using the
+extension for signal names in and out will be declared correct.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun vhdl-instance-line ()
+    "do declaration for std_ulogic"
+    (interactive)
+    (save-excursion
+      (beginning-of-line)
+      (let ((signame (current-word)))
+        (delete-region (beginning-of-line-mark) (end-of-line-mark))
+        (if (string-match "_o\\_>" signame)
+            (insert (format "%s : out std_ulogic;" signame))
+          (insert (format "%s : in std_ulogic;" signame))))))
+
+  (defun vhdl-instance-io ()
+    "instance whole region"
+    (interactive)
+    (if (region-active-p)
+        (progn
+          (let* ((regb (region-beginning))
+                 (rege (region-end)))
+            (goto-char regb)
+            (while (> rege (point))
+              (vhdl-instance-line)
+              (next-line))
+            (vhdl-beautify-region regb rege)))
+      (vhdl-instance-line)))
+
+#+END_SRC
+
+*** swap signals
+
+swap signals for the current line or the marked region.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun vhdl-swap-line ()
+    (beginning-of-line-text)
+    (let* ((first-signal (current-word))
+           (second-signal (next-word)))
+      (vhdl-insert-assignment second-signal first-signal)))
+
+  (defun vhdl-swap-signals ()
+    (interactive)
+    (if (region-active-p)
+        (progn
+          (let* ((regb (region-beginning))
+                 (rege (region-end)))
+            (goto-char regb)
+            (while (> rege (point))
+              (vhdl-swap-line)
+              (next-line))
+            (vhdl-beautify-region regb rege)))
+      (vhdl-swap-line)))
+
+#+END_SRC
 
 ** hooks
 
@@ -1237,11 +1414,12 @@ with my hooks and preferences
   (add-hook 'vhdl-mode-hook 'custom-vhdl-options-hook)
   (add-hook 'vhdl-mode-hook 'custom-vhdl-prefrences-hook)
   (add-hook 'vhdl-mode-hook 'vhdl-add-snippet-models)
+  (add-hook 'vhdl-mode-hook 'vhdl-mode-update)
 
 #+END_SRC
 
 ** completion
-
+   
 using company for the completion, for faster writing vhdl and get
 completion candidates, have to increase the max eval depth due to
 recursion of capf. 
@@ -1438,5 +1616,13 @@ key for file at point.
      (buffer-substring-no-properties begin end)))
 
   (global-set-key (kbd "C-c C-f") 'find-file-at-point)
+
+#+END_SRC
+* user section
+
+provide user specific code here. use the key strokes "C-c '" to open and
+close an emacs-buffer inside of the source declaration.
+
+#+BEGIN_SRC emacs-lisp
 
 #+END_SRC

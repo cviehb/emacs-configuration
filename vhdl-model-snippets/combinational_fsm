@@ -1,0 +1,17 @@
+-- purpose: <description>
+-- type   : combinational
+-- inputs : r_s
+-- outputs: next_r_s
+comb_<description> : process (r_s)
+begin  -- process comb_<description>
+
+  -- avoid latches in design
+  next_r_s <= r_s;
+
+  case r_s.state is
+    when IDLE => <cursor>;
+    when <state>;
+    when others => null;
+  end case;
+
+end process comb_<description>;

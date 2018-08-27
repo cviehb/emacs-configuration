@@ -1,0 +1,8 @@
+type state_t is (IDLE, <States>);                     -- fsm states
+
+type register_set_t is record
+  state : state_t;
+  <cursor>
+end record;
+
+signal r_s, next_r_s : register_set_t;"

@@ -1,0 +1,10 @@
+<label> : process (<clock>, <reset>)
+begin  -- process <label>
+  if <reset> = '0' then  -- asynchronous reset (active low)
+    <cursor>
+  elsif <clock>'event and <clock> = '1' then  -- rising clock edge
+    if <enable> = '1' then  -- synchronous load
+     
+    end if;
+  end if;
+end process <label>;
