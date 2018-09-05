@@ -5,4 +5,4 @@ type register_set_t is record
   <cursor>
 end record;
 
-signal r_s, next_r_s : register_set_t;"
+signal r_s, next_r_s : register_set_t;

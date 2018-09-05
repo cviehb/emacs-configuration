@@ -783,9 +783,10 @@ clearcase is alse available through the standard package vc.
   (defvar clearcase-file-path (concat clearcase-install-path "/" clearcase-file))
 
   (defun get-move-clearcase ()
-    (when (not (file-directory-p clearcase-file-path))
+    (when (not (file-directory-p clearcase-install-path))
       (make-directory clearcase-install-path)
-      (add-to-list 'load-path clearcase-install-path)
+      (add-to-list 'load-path clearcase-install-path))
+    (when (not (file-exists-p clearcase-file-path))
       (url-copy-file clearcase-url clearcase-file)
       (copy-file clearcase-file clearcase-install-path)
       (delete-file clearcase-file)))
@@ -892,23 +893,27 @@ one.
 
 #+BEGIN_SRC emacs-lisp
 
-  (defconst vhdl-mode-url "https://guest.iis.ee.ethz.ch/~zimmi/emacs/vhdl-mode-3.38.1.tar.gz")
-  (defconst vhdl-mode-git-url "https://github.com/cviehb/vhdl-mode/raw/master/vhdl-mode.el")
-  (defconst vhdl-mode-newest-version "3.38.1")
-  (defconst vhdl-local-folder "~/.emacs.d/local")
+    (defconst vhdl-mode-url "https://guest.iis.ee.ethz.ch/~zimmi/emacs/vhdl-mode-3.38.1.tar.gz")
+    (defconst vhdl-mode-git-url "https://github.com/cviehb/vhdl-mode/raw/master/vhdl-mode.el")
+    (defconst vhdl-mode-newest-version "3.38.1")
+    (defconst vhdl-local-folder "~/.emacs.d/local")
 
-  (defun vhdl-mode-update (url version-avail)
-    "updates the version to the newest one"
-    (interactive "sDownload Url Archive?:\nsVersion to Download:")
-    (require 'vhdl-mode)
-    (when (not (string= vhdl-version vhdl-mode-newest-version))
-      (message "Updating VHDL Mode")
-      (when (not (file-directory-p vhdl-local-folder))
-        (make-directory vhdl-local-folder))
-      (url-copy-file vhdl-mode-git-url (concat vhdl-local-folder "/vhdl-mode.el"))
-      (add-to-list 'load-path vhdl-local-folder)
-      (message "Update Done")
-      ))
+    (defun vhdl-mode-update (url version-avail)
+      "updates the version to the newest one"
+      (interactive "sDownload Url Archive?:\nsVersion to Download:")
+      (require 'vhdl-mode)
+      (when (not (string= vhdl-version vhdl-mode-newest-version))
+        (message "Updating VHDL Mode")
+        (when (not (file-directory-p vhdl-local-folder))
+          (make-directory vhdl-local-folder))
+        (url-copy-file vhdl-mode-git-url (concat vhdl-local-folder "/vhdl-mode.el"))
+        (add-to-list 'load-path vhdl-local-folder)
+        (message "Update Done")
+        ))
+
+  (defun vhdl-mode-update-hook ()
+    "hook for updating the vhdl mode to the newest one"
+    (vhdl-mode-update vhdl-mode-git-url vhdl-mode-newest-version))
 
 #+END_SRC
 
@@ -971,10 +976,11 @@ my personal preverences and customizations on the vhdl mode.
 
 #+BEGIN_SRC emacs-lisp
 
-  (defun custom-vhdl-prefrences-hook ()
-    "provides my customizations on the vhdl mode"
-    (setq vhdl-clock-name "clk_i")
-    (setq vhdl-reset-name "res_n_i"))
+    (defun custom-vhdl-prefrences-hook ()
+      "provides my customizations on the vhdl mode"
+      (setq vhdl-clock-name "clk_i")
+      (setq vhdl-reset-name "res_n_i")
+      (vhdl-electric-mode))
 
 #+END_SRC
 
@@ -1414,7 +1420,7 @@ with my hooks and preferences
   (add-hook 'vhdl-mode-hook 'custom-vhdl-options-hook)
   (add-hook 'vhdl-mode-hook 'custom-vhdl-prefrences-hook)
   (add-hook 'vhdl-mode-hook 'vhdl-add-snippet-models)
-  (add-hook 'vhdl-mode-hook 'vhdl-mode-update)
+  (add-hook 'vhdl-mode-hook 'vhdl-mode-update-hook)
 
 #+END_SRC
 
